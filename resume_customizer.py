@@ -45,8 +45,6 @@ def modify_footer(footer):
         var = str
         var += keywords
     output = p.sub(var, content)
-    print(var)
-    print(output)
     f.close()
     g = open(temp_loc_f, 'w')
     g.write(output)
@@ -62,16 +60,18 @@ def dir2zip(dir_to_zip):
 
 def make_zipfile(output_filename, source_dir):
     dir_to_zip = os.path.abspath(os.path.join(source_dir, os.pardir))
-    with zipfile.Zipfile(output_filename, 'a', zipfile.ZIP_DEFLATED) as zip:
+    with zipfile.ZipFile(output_filename, 'a', zipfile.ZIP_DEFLATED) as zip:
         for root, dirs, files in os.walk(source_dir):
             zip.write(root, os.path.relpath(root, dir_to_zip))
             for file in files:
                 filename = os.path.join(root, file)
                 if os.path.isfile(filename):
-                    zipped = os.path.join(os.path.relpath(root, relroot), file)
+                    zipped = os.path.join(os.path.relpath(root, dir_to_zip), file)
                     zip.write(filename, zipped)
-                    
+
 def make_new_docx(new_resume):
+    if os.path.exists(new_resume):
+        os.remove(new_resume)
     list = ['/tmp/rez/word/', '/tmp/rez/_rels/', '/tmp/rez/docProps']
     for i in list:
         make_zipfile(new_resume, i)
@@ -83,6 +83,6 @@ def main():
     modify_document(temp_loc_d)
     modify_footer(temp_loc_f)
     make_new_docx(new_resume_name)
-    copyfile('MCEvans_resume.docx', 'Desktop/MCEvans_resume.docx')
+#    copyfile('MCEvans_resume.docx', 'Desktop/MCEvans_resume.docx')
 
 main()
